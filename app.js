@@ -107,9 +107,9 @@
 			'model.name': function (val, oldVal) {
 				this.filter.byName = [];
 
-				for (var key in this.list.employees) {
-					if (this.list.employees[key].name.toLowerCase().indexOf(val.toLowerCase()) > -1) {
-						this.filter.byName.push(this.list.employees[key]);
+				for (var i = 0, n = this.list.employees.length; i < n; i++) {
+					if (this.list.employees[i].name.toLowerCase().indexOf(val.toLowerCase()) > -1) {
+						this.filter.byName.push(this.list.employees[i]);
 					}
 				}
 
@@ -119,9 +119,9 @@
 			'model.svid': function (val, oldVal) {
 				this.filter.bySvid = [];
 
-				for (var key in this.list.employees) {
-					if (this.list.employees[key].svid === val) {
-						this.filter.bySvid.push(this.list.employees[key]);
+				for (var i = 0, n = this.list.employees.length; i < n; i++) {
+					if (this.list.employees[i].svid === val) {
+						this.filter.bySvid.push(this.list.employees[i]);
 					}
 				}
 
@@ -131,9 +131,9 @@
 			'model.deild': function (val, oldVal) {
 				this.filter.byDeild = [];
 
-				for (var key in this.list.employees) {
-					if (this.list.employees[key].deild === val) {
-						this.filter.byDeild.push(this.list.employees[key]);
+				for (var i = 0, n = this.list.employees.length; i < n; i++) {
+					if (this.list.employees[i].deild === val) {
+						this.filter.byDeild.push(this.list.employees[i]);
 					}
 				}
 
@@ -143,9 +143,9 @@
 			'model.starfsheiti': function (val, oldVal) {
 				this.filter.byStarfsheiti = [];
 
-				for (var key in this.list.employees) {
-					if (this.list.employees[key].starfsheiti === val) {
-						this.filter.byStarfsheiti.push(this.list.employees[key]);
+				for (var i = 0, n = this.list.employees.length; i < n; i++) {
+					if (this.list.employees[i].starfsheiti === val) {
+						this.filter.byStarfsheiti.push(this.list.employees[i]);
 					}
 				}
 
@@ -155,38 +155,85 @@
 
 		methods: {
 			filterEmployees: function () {
-				this.filter.filteredEmployees = [];
+				this.filteredEmployees = [];
 
-				var filtered = [],
-					_this = this,
-					combined = this.filter.byName.concat(this.filter.bySvid, this.filter.byDeild, this.filter.byStarfsheiti);
+				var combined = this.filter.byName.concat(this.filter.bySvid, this.filter.byDeild, this.filter.byStarfsheiti),
+					filtered = [];
 
-				combinedReduced = combined.filter(function (item, pos) {
-					var indexOfItem = _this.getIndexOfItem(combined, item.name);
+				// Viljum ekki duplicate names
+				combined = this.removeObjArrDuplicates(combined, 'name');
 
-					return indexOfItem === pos;
-				});
-
+				// Finna starfsmenn sem eru í öllum völdum listum
 				for (var i = 0, n = combined.length; i < n; i++) {
-					console.log(combined[i].name);
-				}
-			},
+					var name = combined[i].name;
 
-			isInFilter: function (filterName, item) {
-				
-			},
-
-			getIndexOfItem: function (list, item) {
-				var index = -1;
-
-				for (var i = 0, n = list.length; i < n; i++) {
-					if (list[i].name === item) {
-						index = i;
-						break;
+					if (this.isInAllFilters(name)) {
+						filtered.push(combined[i]);
 					}
 				}
 
-				return index;
+				this.filteredEmployees = filtered;
+			},
+
+			isInAllFilters: function (item) {
+				var isInByName = false,
+					isInBySvid = false,
+					isInByDeild = false,
+					isInByStarfsheiti = false;
+
+				if (this.isInFilter('byName', item)) {
+					isInByName = true;
+				}
+
+				if (this.isInFilter('bySvid', item)) {
+					isInBySvid = true;
+				}
+
+				if (this.isInFilter('byDeild', item)) {
+					isInByDeild = true;
+				}
+
+				if (this.isInFilter('byStarfsheiti', item)) {
+					isInByStarfsheiti = true;
+				}
+
+				return isInByName && isInBySvid && isInByDeild && isInByStarfsheiti;
+			},
+
+			isInFilter: function (filterName, item) {
+				if (! this.filter[filterName].length) {
+					return true;
+				}
+
+				for (var i = 0, n = this.filter[filterName].length; i < n; i++) {
+					var name = this.filter[filterName][i].name;
+
+					if (name === item) {
+						return true;
+					}
+				}
+
+				return false;
+			},
+
+			removeObjArrDuplicates: function (arr, filterKey) {
+				var tempObj = {};
+
+				// Viljum ekki duplicate name, obj leyfa ekki duplicate keys
+				// svo við setjum name sem key og obj sem value í temp obj
+				for (var i = 0, n = arr.length; i < n; i++) {
+					tempObj[arr[i][filterKey]] = arr[i];
+				}
+
+				// Reset arr
+				arr = [];
+
+				// Setjum obj values í arr array aftur, nema núna ekki duplicated nöfn
+				for (var key in tempObj) {
+					arr.push(tempObj[key]);
+				}
+
+				return arr;
 			}
 		}
 	});
@@ -194,6 +241,15 @@
 })();
 
 /*
+var arr = {};
+
+for ( var i=0, len=things.thing.length; i < len; i++ )
+    arr[things.thing[i]['place']] = things.thing[i];
+
+things.thing = new Array();
+for ( var key in arr )
+    things.thing.push(arr[key]);
+
 uniqueArray = a.filter(function(item, pos) {
     return a.indexOf(item) == pos;
 })
