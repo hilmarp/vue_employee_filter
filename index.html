@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="bootstrap.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1>Filter</h1>
+
+                <div id="app">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="">Nafn</label>
+                                <input type="text" class="form-control" v-model="model.name">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="">Svið</label>
+                                <select class="form-control" v-model="model.svid">
+                                    <option value="Svið">Svið</option>
+                                    <option value="{{ svid.name }}" v-for="svid in list.svids">{{ svid.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="">Deild</label>
+                                <select class="form-control" v-model="model.deild">
+                                    <option value="Deild">Deild</option>
+                                    <option value="{{ deild.name }}" v-for="deild in list.deilds">{{ deild.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="">Starfsheiti</label>
+                                <select class="form-control" v-model="model.starfsheiti">
+                                    <option value="Starfsheiti">Starfsheiti</option>
+                                    <option value="{{ starfsheiti.name }}" v-for="starfsheiti in list.starfsheitis">{{ starfsheiti.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nafn</th>
+                                <th>Svið</th>
+                                <th>Deild</th>
+                                <th>Starfsheiti</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="employee in filteredEmployees">
+                                <td>{{ employee.name }}</td>
+                                <td>{{ employee.svid }}</td>
+                                <td>{{ employee.deild }}</td>
+                                <td>{{ employee.starfsheiti }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="vue.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
